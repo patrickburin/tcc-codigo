@@ -1,0 +1,41 @@
+# Ambientes virtuais
+venv/
+.venv/
+ENV/
+env/
+.env/
+
+# Cache e arquivos temporários
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+
+# Configurações do VS Code e IDEs
+.vscode/
+.idea/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos gerados por bibliotecas
+*.sqlite3
+*.h5
+*.keras
+*.npy
+*.npz
+*.ckpt
+
+# Arquivos de pacotes
+*.egg-info/
+*.dist-info/
+build/
+dist/
+
+# Se usar Jupyter (opcional)
+.ipynb_checkpoints/
+
+# Arquivos de configuração pessoais
+*.env
