@@ -82,29 +82,46 @@ message = f"🧠 Análise Combinada do Vídeo:\n\n"
 message += f"📌 Exercício detectado: {label_map[most_common_label]}\n"
 message += f"📊 Confiabilidade da detecção: {det_accuracy:.4f} ({most_common_count}/{len(det_labels)} sequências)\n"
 
+show_bar = False
 if det_accuracy >= 0.75 and most_common_label != 3:
-    message += f"✅ Confiabilidade da execução correta: {val_accuracy:.4f}"
-    print(f"✅ Confiabilidade da execução correta: {val_accuracy:.4f}")
+    show_bar = True
+    percent = val_accuracy * 100
+    if percent >= 90:
+        message += f"✅ Execução classificada como CORRETA com {percent:.2f}% de confiança.\n"
+    elif percent >= 75:
+        message += f"⚠ Execução correta, mas precisa de ajustes ({percent:.2f}%).\n"
+    else:
+        message += f"❌ Execução classificada como INCORRETA ({percent:.2f}%).\n"
+    print(message.split('\n')[-2])  # imprime a última linha da mensagem
 else:
-    message += "⚠️ Não foi possível avaliar a execução: detecção inconclusiva ou exercício fora do padrão."
-    print("⚠️ Não foi possível avaliar a execução: detecção inconclusiva ou exercício fora do padrão.")
+    message += "⚠ Não foi possível avaliar a execução: detecção inconclusiva ou exercício fora do padrão."
+    print("⚠ Não foi possível avaliar a execução: detecção inconclusiva ou exercício fora do padrão.")
 
-from tkinter import Toplevel, Label, Button, Text, Scrollbar, RIGHT, Y, END
 
-def exibir_resultado(mensagem):
+from tkinter import Toplevel, Label, Button, Text, Scrollbar, RIGHT, Y, END, Canvas
+
+def exibir_resultado(mensagem, barra=None):
     root = tk.Tk()
     root.title("Resultado da Análise")
-    root.geometry("500x300")
+    root.geometry("500x350")
     root.resizable(False, False)
- 
-    text_area = Text(root, wrap="word", font=("Arial", 12), padx=10, pady=10)
+
+    text_area = Text(root, wrap="word", font=("Arial", 12), padx=10, pady=10, height=10)
     text_area.insert(END, mensagem)
     text_area.config(state="disabled")
-    text_area.pack(expand=True, fill="both")
+    text_area.pack(expand=False, fill="x")
+
+    if barra:
+        canvas = Canvas(root, width=400, height=30)
+        canvas.pack(pady=10)
+
+        cor = "green" if barra >= 90 else "orange" if barra >= 75 else "red"
+        canvas.create_rectangle(0, 0, barra * 4, 30, fill=cor)
+        canvas.create_text(200, 15, text=f"{barra:.2f}%", fill="white", font=("Arial", 12, "bold"))
 
     btn_fechar = Button(root, text="Fechar", font=("Arial", 11), command=root.destroy)
     btn_fechar.pack(pady=10)
 
     root.mainloop()
 
-exibir_resultado(message)
+exibir_resultado(message, val_accuracy * 100 if show_bar else None)
